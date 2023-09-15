@@ -10,13 +10,13 @@
 </div>
 
 
-[![Stand With Ukraine](https://raw.githubusercontent.com/vshymanskyy/StandWithUkraine/main/badges/StandWithUkraine.svg)](https://den.dev/ukraine)
+[![Stand With Ukraine](https://raw.githubusercontent.com/vshymanskyy/StandWithUkraine/main/badges/StandWithUkraine.svg)](https://supportukrainenow.org/)
 
 I've spent enough time looking at `application/x-bond-compact-binary` files [returned by Halo Infinite API](https://den.dev/blog/parsing-halo-api-bond/), that I thought I'd save myself and others the hassle of reading those manually for quick structural checks. This utility doesn't do much other than output the structure of Bond-encoded files - you still need to do the hard work of converting them to some kind of strongly-type representation, at least for now.
 
 ## Getting Started
 
-Download one of the [available releases](https://github.com/OpenSpartan/bond-reader/releases) and extract the archive. Look for `br.exe` or `br` in the folder - that's what you need to read Bond files.
+Download one of the [available releases](https://github.com/dend/bond-reader/releases) and extract the archive. Look for `br.exe` or `br` in the folder - that's what you need to read Bond files.
 
 This tool can **only read files encoded in Bond format** without any additional "wrappers". That is, if the content is wrapped in something else, or is `zlib`-ed (as an example), you'll need to first clean that up before passing it to `br`.
 
@@ -44,4 +44,4 @@ If you don't specify the output file, you'll only see the structure output to th
 
 ## Feedback
 
-Let me know [on Twitter](https://twitter.com/denniscode) or [open an issue](https://github.com/OpenSpartan/bond-reader/issues).
+[Open an issue](https://github.com/dend/bond-reader/issues).

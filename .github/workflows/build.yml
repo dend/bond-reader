@@ -33,6 +33,9 @@ jobs:
       DOTNET_ADD_GLOBAL_TOOLS_TO_PATH: false
       DOTNET_MULTILEVEL_LOOKUP: 0
 
+    permissions:
+      contents: write
+
     steps:
     - uses: actions/checkout@v2
       

@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "BondReader": {
+      "commandName": "Project",
+      "commandLineArgs": " parse --version 2 --input \"C:\\Users\\chief\\Downloads\\cinder.bin\" --output test.txt"
+    }
+  }
+}

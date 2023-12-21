@@ -40,24 +40,34 @@ namespace BondReader
                 IsRequired = false,
             };
 
+            var iterativeDiscoveryOption = new Option<bool>(
+               name: "--iterative-discovery",
+               description: "Iteratively try and discovery Bond content in the file.",
+               getDefaultValue: () => false)
+            {
+                IsRequired = false,
+            };
+
             var parseCommand = new Command("parse", "Parses a Bond file and outputs its structure.")
             {
                 bondVersionOption,
                 inputFileOption,
                 outputFileOption,
+                iterativeDiscoveryOption,
             };
 
             rootCommand.Add(parseCommand);
 
             parseCommand.SetHandler(
-                (bondVersion, inputFile, outputFile) =>
+                (bondVersion, inputFile, outputFile, iterativeDiscovery) =>
             {
                 BondProcessor processor = new(bondVersion);
-                processor.ProcessFile(inputFile, outputFile);
+                processor.ProcessFile(inputFile, outputFile, iterativeDiscovery);
             },
                 bondVersionOption,
                 inputFileOption,
-                outputFileOption);
+                outputFileOption,
+                iterativeDiscoveryOption);
 
             return await rootCommand.InvokeAsync(args);
         }

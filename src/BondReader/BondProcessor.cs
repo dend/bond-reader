@@ -137,7 +137,12 @@ namespace BondReader
                 reader.ReadContainerBegin(out containerCounter, out containerDataType, out valueDataType);
             }
 
-            this.Log($"{new string('\t', StructureIndent)}Reading container with item type: {containerDataType,15}\tItems in container: {containerCounter,15}\t{(isMap ?  (marker + valueDataType) : string.Empty),15}", this.LogContainer);
+            this.Log($"{new string('\t', StructureIndent)}Container item type: ", this.LogContainer, true);
+            this.Log($"{containerDataType,15}", this.LogContainer, true, ConsoleColor.Green);
+            this.Log($"\tItems: ", this.LogContainer, true);
+            this.Log($"{containerCounter,10}\t{(isMap ? (marker + valueDataType) : string.Empty),10}", this.LogContainer, true, ConsoleColor.Red);
+            this.Log(string.Empty, this.LogContainer);
+
             this.Log($"{new string('\t', StructureIndent)}╔{new string('═', 25)} CON {new string('═', 25)}╗", this.LogContainer, color: ConsoleColor.Red);
 
             for (int i = 0; i < containerCounter; i++)

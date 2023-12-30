@@ -2,7 +2,7 @@
   "profiles": {
     "BondReader": {
       "commandName": "Project",
-      "commandLineArgs": " parse --version 2 --input \"C:\\Users\\ibua\\Downloads\\lobby-inspection\\lobby-boot.bin\" --output \"C:\\Users\\ibua\\Downloads\\lb.txt\""
+      "commandLineArgs": " parse --version 2 --input \"C:\\Users\\ibua\\Downloads\\post-bootstrap.bin\" --output \"C:\\Users\\ibua\\Downloads\\pbr.txt\" --iterative-discovery"
     }
   }
 }

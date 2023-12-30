@@ -18,6 +18,8 @@ namespace BondReader
     /// </summary>
     internal class BondProcessor
     {
+        int StructureIndent = -2;
+
         /// <summary>
         /// Initializes a new instance of the <see cref="BondProcessor"/> class, providing the ability to process a Bond file.
         /// </summary>
@@ -49,10 +51,9 @@ namespace BondReader
             }
             else
             {
-                this.Log($"█{new string('░', 25)} INCREMENTAL DISCOVERY {new string('░', 25)}█", this.LogContainer);
                 for (int i = 0; i < byteContent.Length; i++)
                 {
-                    this.Log($"█{new string('░', 25)} INCREMENTAL DISCOVERY ITERATION {i} {new string('░', 25)}█", this.LogContainer);
+                    this.Log($"╔{new string('═', 25)} INCREMENTAL DISCOVERY ITERATION {i} {new string('═', 25)}╗", this.LogContainer, color: ConsoleColor.Blue);
                     var inputBuffer = new Bond.IO.Unsafe.InputBuffer(byteContent.Skip(i).ToArray());
                     var reader = new CompactBinaryReader<Bond.IO.Unsafe.InputBuffer>(inputBuffer, this.Version);
 
@@ -63,14 +64,13 @@ namespace BondReader
                     catch (Exception ex)
                     {
                         this.Log("Failed to process iteration due to wrong byte structure. This is likely not the start of the envelope.", this.LogContainer);
+                        StructureIndent = StructureIndent - 2;
                     }
 
-                    this.Log($"█{new string('░', 25)} END INCREMENTAL DISCOVERY ITERATION {i} {new string('░', 25)}█", this.LogContainer);
+                    this.Log($"╚{new string('═', 25)} END INCREMENTAL DISCOVERY ITERATION {i} {new string('═', 25)}╝", this.LogContainer, color: ConsoleColor.Blue);
                 }
             }
         }
-
-        int StructureIndent = -2;
 
         private void ProcessData(CompactBinaryReader<Bond.IO.Unsafe.InputBuffer> reader, string outputFilePath)
         {

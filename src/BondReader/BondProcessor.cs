@@ -39,36 +39,55 @@ namespace BondReader
         /// </summary>
         /// <param name="inputFilePath">Path to the input file to be processed.</param>
         /// <param name="outputFilePath">Path to output file to be processed.</param>
-        internal void ProcessFile(string inputFilePath, string outputFilePath, bool iterativeDiscovery)
+        internal void ProcessFile(string inputFilePath, string outputFilePath, bool iterativeDiscovery, int skip = 0)
         {
-            var byteContent = File.ReadAllBytes(inputFilePath);
+            this.Log($"Skipping bytes: {skip}", this.LogContainer, color: ConsoleColor.Blue);
 
-            if (!iterativeDiscovery)
+            byte[] byteContent;
+
+            using (FileStream fs = new(inputFilePath, FileMode.Open, FileAccess.Read))
             {
-                var inputBuffer = new Bond.IO.Unsafe.InputBuffer(byteContent);
-                var reader = new CompactBinaryReader<Bond.IO.Unsafe.InputBuffer>(inputBuffer, this.Version);
-                this.ProcessData(reader, outputFilePath);
+                // Skip the specified number of bytes
+                fs.Seek(skip, SeekOrigin.Begin);
+
+                // Read the rest of the file into the byte array
+                byteContent = new byte[fs.Length - skip];
+                fs.Read(byteContent, 0, byteContent.Length);
+            }
+
+            if (byteContent != null && byteContent.Length > 0)
+            {
+                if (!iterativeDiscovery)
+                {
+                    var inputBuffer = new Bond.IO.Unsafe.InputBuffer(byteContent);
+                    var reader = new CompactBinaryReader<Bond.IO.Unsafe.InputBuffer>(inputBuffer, this.Version);
+                    this.ProcessData(reader, outputFilePath);
+                }
+                else
+                {
+                    for (int i = 0; i < byteContent.Length; i++)
+                    {
+                        this.Log($"╔{new string('═', 25)} INCREMENTAL DISCOVERY ITERATION {i} {new string('═', 25)}╗", this.LogContainer, color: ConsoleColor.Blue);
+                        var inputBuffer = new Bond.IO.Unsafe.InputBuffer(byteContent.Skip(i).ToArray());
+                        var reader = new CompactBinaryReader<Bond.IO.Unsafe.InputBuffer>(inputBuffer, this.Version);
+
+                        try
+                        {
+                            this.ProcessData(reader, outputFilePath);
+                        }
+                        catch (Exception ex)
+                        {
+                            this.Log("Failed to process iteration due to wrong byte structure. This is likely not the start of the envelope.", this.LogContainer);
+                            StructureIndent = StructureIndent - 2;
+                        }
+
+                        this.Log($"╚{new string('═', 25)} END INCREMENTAL DISCOVERY ITERATION {i} {new string('═', 25)}╝", this.LogContainer, color: ConsoleColor.Blue);
+                    }
+                }
             }
             else
             {
-                for (int i = 0; i < byteContent.Length; i++)
-                {
-                    this.Log($"╔{new string('═', 25)} INCREMENTAL DISCOVERY ITERATION {i} {new string('═', 25)}╗", this.LogContainer, color: ConsoleColor.Blue);
-                    var inputBuffer = new Bond.IO.Unsafe.InputBuffer(byteContent.Skip(i).ToArray());
-                    var reader = new CompactBinaryReader<Bond.IO.Unsafe.InputBuffer>(inputBuffer, this.Version);
-
-                    try
-                    {
-                        this.ProcessData(reader, outputFilePath);
-                    }
-                    catch (Exception ex)
-                    {
-                        this.Log("Failed to process iteration due to wrong byte structure. This is likely not the start of the envelope.", this.LogContainer);
-                        StructureIndent = StructureIndent - 2;
-                    }
-
-                    this.Log($"╚{new string('═', 25)} END INCREMENTAL DISCOVERY ITERATION {i} {new string('═', 25)}╝", this.LogContainer, color: ConsoleColor.Blue);
-                }
+                this.Log("No byte content to read.", this.LogContainer, color: ConsoleColor.Red);
             }
         }
 
@@ -145,14 +164,21 @@ namespace BondReader
 
             this.Log($"{new string('\t', StructureIndent)}╔{new string('═', 25)} CON {new string('═', 25)}╗", this.LogContainer, color: ConsoleColor.Red);
 
-            for (int i = 0; i < containerCounter; i++)
+            if (containerCounter < 1000)
             {
-                this.Log($"{new string('\t', StructureIndent)}List item: " + i, this.LogContainer);
-                this.DecideOnDataType(reader, containerDataType);
-                if (isMap)
+                for (int i = 0; i < containerCounter; i++)
                 {
-                    this.DecideOnDataType(reader, valueDataType);
+                    this.Log($"{new string('\t', StructureIndent)}List item: " + i, this.LogContainer);
+                    this.DecideOnDataType(reader, containerDataType);
+                    if (isMap)
+                    {
+                        this.DecideOnDataType(reader, valueDataType);
+                    }
                 }
+            }
+            else
+            {
+                this.Log($"{new string('\t', StructureIndent)}Container way too big. Unlikely we're looking at the right structure.", this.LogContainer);
             }
 
             this.Log($"{new string('\t', StructureIndent)}Done reading container.", this.LogContainer);

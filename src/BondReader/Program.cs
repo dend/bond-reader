@@ -48,26 +48,35 @@ namespace BondReader
                 IsRequired = false,
             };
 
+            var skipOption = new Option<int>(
+               name: "--skip",
+               description: "Skips a predefined number of bytes when reading a file.")
+            {
+                IsRequired = false,
+            };
+
             var parseCommand = new Command("parse", "Parses a Bond file and outputs its structure.")
             {
                 bondVersionOption,
                 inputFileOption,
                 outputFileOption,
                 iterativeDiscoveryOption,
+                skipOption,
             };
 
             rootCommand.Add(parseCommand);
 
             parseCommand.SetHandler(
-                (bondVersion, inputFile, outputFile, iterativeDiscovery) =>
+                (bondVersion, inputFile, outputFile, iterativeDiscovery, skip) =>
             {
                 BondProcessor processor = new(bondVersion);
-                processor.ProcessFile(inputFile, outputFile, iterativeDiscovery);
+                processor.ProcessFile(inputFile, outputFile, iterativeDiscovery, skip);
             },
                 bondVersionOption,
                 inputFileOption,
                 outputFileOption,
-                iterativeDiscoveryOption);
+                iterativeDiscoveryOption,
+                skipOption);
 
             return await rootCommand.InvokeAsync(args);
         }

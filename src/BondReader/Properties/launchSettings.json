@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "BondReader": {
+      "commandName": "Project",
+      "commandLineArgs": " parse --version 2 --input \"C:\\Users\\honolulu\\Downloads\\pt-wait.bin\" --output \"C:\\Users\\honolulu\\Downloads\\lobby-boot.txt\""
+    }
+  }
+}
